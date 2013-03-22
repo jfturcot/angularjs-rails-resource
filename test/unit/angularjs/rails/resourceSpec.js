@@ -134,6 +134,40 @@ describe("js.rails", function () {
         });
     });
 
+    describe('railsNestedResources', function() {
+        var transformer,
+            config = {nestedResources: ['test', 'test2']};
+
+        function testTransform(nestedData, renamedNestedData) {
+            expect(transformer(nestedData, config)).toEqualData(renamedNestedData);
+        }
+
+        beforeEach(inject(function ($rootScope, $q, railsNestedResourcesTransformer) {
+            transformer = railsNestedResourcesTransformer;
+        }));
+
+        it('should append _attributes to nested resources', function() {
+            testTransform({test: {abc: "xyz"}}, {test_attributes: {abc: "xyz"}});
+        });
+
+        it('should append _attributes only to nested resources in the config', function() {
+            testTransform({abc: {zyx: "xyz"}, test: {abc: "zxy"}}, {abc: {zyx: "xyz"}, test_attributes: {abc: "zxy"}});
+        });
+
+        it('should only append _attributes to an object', function() {
+            testTransform({test: "abc"}, {test: "abc"});
+        });
+
+        it('should append _attributes to all the nested resources in the config', function() {
+            testTransform({test: {abc: "xyz"}, test2: {abc: "zxy"}}, {test_attributes: {abc: "xyz"}, test2_attributes: {abc: "zxy"}});
+        });
+
+        it('should append _attributes to the deep nested resources', function() {
+            testTransform({abc: {test: {abc: "xyz"}}}, {abc: {test_attributes: {abc: "xyz"}}});
+        });
+
+    });
+
     describe('singular railsResourceFactory', function() {
         var $httpBackend, $rootScope, factory, Test,
             config = {

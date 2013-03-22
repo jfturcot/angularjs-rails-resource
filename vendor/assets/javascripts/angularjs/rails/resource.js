@@ -1,19 +1,19 @@
 (function (undefined) {
     angular.module('rails', ['ng']);
 
-    function transformObject(data, transform) {
+    function transformObject(data, transform, resource) {
         var newKey;
 
         if (data && angular.isObject(data)) {
             angular.forEach(data, function (value, key) {
-                newKey = transform(key);
+                newKey = transform(key, value, resource);
 
                 if (newKey !== key) {
                     data[newKey] = value;
                     delete data[key];
                 }
 
-                transformObject(value, transform);
+                transformObject(value, transform, resource);
             });
         }
     }
@@ -37,6 +37,18 @@
         return key.replace(/[A-Z]/g, function (match, index) {
             return index === 0 ? match : '_' + match.toLowerCase();
         });
+    }
+
+    function appendAttributes(key, value, resource) {
+        if (!angular.isString(key)) {
+            return key;
+        }
+
+        if (angular.isObject(value) && resource.nestedResources.indexOf(key) > -1) {
+          return key + "_attributes"
+        }
+
+        return key;
     }
 
     angular.module('rails').factory('railsFieldRenamingTransformer', function () {
@@ -84,6 +96,13 @@
         };
     });
 
+    angular.module('rails').factory('railsNestedResourcesTransformer', function () {
+        return function (data, resource) {
+            transformObject(data, appendAttributes, resource);
+            return data;
+        };
+    });
+
     angular.module('rails').factory('railsResourceFactory', ['$http', '$q', '$injector', '$interpolate', function ($http, $q, $injector, $interpolate) {
         function urlBuilder(url) {
             var expression;
@@ -120,6 +139,7 @@
             RailsResource.url = urlBuilder(config.url);
             RailsResource.rootName = config.name;
             RailsResource.rootPluralName = config.pluralName || config.name + 's';
+            RailsResource.nestedResources = config.nestedResources || [];
             RailsResource.httpConfig = config.httpConfig || {};
             RailsResource.requestTransformers = [];
             RailsResource.responseInterceptors = [];

@@ -54,6 +54,8 @@ The following options are available for the config object passed to the factory 
  * **name** - This is the name used for root wrapping when dealing with singular instances.
  * **pluralName** *(optional)* - If specified this name will be used for unwrapping query results,
         if not specified the singular name with an appended 's' will be used.
+ * **nestedResources** *(optional)* - If your model accepts nested attributes, create an array of all the names that should have "_attributes" appended to it before
+        being sent back to the server.
  * **httpConfig** *(optional)* - Passed directly to $http.
  * **defaultParams** *(optional)* - If the resource expects a default set of query params on every call you can specify them here.
  * **requestTransformers** *(optional) - See [Transformers / Interceptors](#transformers--interceptors)
