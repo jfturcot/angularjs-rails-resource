@@ -129,7 +129,7 @@
         }
 
         function railsResourceFactory(config) {
-            var transformers = config.requestTransformers || ['railsRootWrappingTransformer', 'railsFieldRenamingTransformer'],
+            var transformers = config.requestTransformers || ['railsRootWrappingTransformer', 'railsFieldRenamingTransformer', 'railsNestedResourcesTransformer'],
                 interceptors = config.responseInterceptors || ['railsFieldRenamingInterceptor', 'railsRootWrappingInterceptor'];
 
             function RailsResource(value) {
