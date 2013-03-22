@@ -136,7 +136,7 @@ describe("js.rails", function () {
 
     describe('railsNestedResources', function() {
         var transformer,
-            config = {nestedResources: ['test', 'test2']};
+            config = {nestedResources: ['test', 'test2', 'tests']};
 
         function testTransform(nestedData, renamedNestedData) {
             expect(transformer(nestedData, config)).toEqualData(renamedNestedData);
@@ -154,8 +154,21 @@ describe("js.rails", function () {
             testTransform({abc: {zyx: "xyz"}, test: {abc: "zxy"}}, {abc: {zyx: "xyz"}, test_attributes: {abc: "zxy"}});
         });
 
-        it('should only append _attributes to an object', function() {
+        it('should append _attributes to an array of objects', function() {
+            testTransform({tests: [{zyx: "aaa"}]}, {tests_attributes: [{zyx: "aaa"}]});
+        });
+
+        it('should not append _attributes to a string', function() {
             testTransform({test: "abc"}, {test: "abc"});
+        });
+
+        it('should not append _attributes to a number', function() {
+            testTransform({test: 1}, {test: 1});
+        });
+
+        it('should not append _attributes to a date', function() {
+            var date = new Date();
+            testTransform({test: date}, {test: date});
         });
 
         it('should append _attributes to all the nested resources in the config', function() {

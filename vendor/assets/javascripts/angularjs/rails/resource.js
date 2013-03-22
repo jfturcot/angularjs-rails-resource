@@ -44,7 +44,7 @@
             return key;
         }
 
-        if (angular.isObject(value) && resource.nestedResources.indexOf(key) > -1) {
+        if (!(angular.isString(value) || angular.isNumber(value) || angular.isDate(value)) && resource.nestedResources.indexOf(key) > -1) {
           return key + "_attributes"
         }
 
